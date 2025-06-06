@@ -1,0 +1,1694 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel Doces da Jess</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Paleta de Cores Baseada no Logo/Cartão */
+      :root {
+        --cor-principal-rosa: #fecdd3; /* bg-rose-200 */
+        --cor-secundaria-rosa: #fda4af; /* bg-rose-300 */
+        --cor-destaque-rosa: #f43f5e; /* bg-rose-500 */
+        --cor-texto-escuro: #374151; /* text-gray-700 */
+        --cor-texto-claro: #ffffff;
+        --cor-roxo: #c084fc; /* purple-400 */
+        --cor-turquesa: #2dd4bf; /* teal-400 */
+        --cor-amarelo-claro: #fef9c3; /* yellow-100 - do cartão */
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--cor-principal-rosa); /* Fundo rosa claro */
+        color: var(--cor-texto-escuro);
+      }
+      .brand-font {
+        font-family: 'Pacifico', cursive;
+      }
+      #logoPreview, #sidebarLogo {
+        max-width: 150px;
+        max-height: 150px;
+        margin: 0 auto 1rem;
+        border-radius: 8px;
+        object-fit: contain;
+        display: block;
+      }
+      .action-button {
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+        margin-right: 0.25rem;
+        transition: background-color 0.2s ease;
+      }
+      .edit-button {
+        background-color: var(--cor-turquesa); /* Azul/Turquesa */
+        color: var(--cor-texto-claro);
+      }
+      .edit-button:hover {
+        background-color: #14b8a6; /* teal-500 */
+      }
+      .delete-button {
+        background-color: var(--cor-destaque-rosa); /* Vermelho/Rosa forte */
+        color: var(--cor-texto-claro);
+      }
+      .delete-button:hover {
+        background-color: #e11d48; /* rose-600 */
+      }
+      /* Sidebar com gradiente do cartão */
+      .sidebar-gradient {
+         background: linear-gradient(to bottom, var(--cor-amarelo-claro), var(--cor-principal-rosa));
+         color: var(--cor-texto-escuro); /* Texto escuro para contraste */
+      }
+      .sidebar-button {
+         color: var(--cor-texto-escuro);
+         transition: background-color 0.2s ease, color 0.2s ease;
+      }
+      .sidebar-button:hover {
+         background-color: var(--cor-secundaria-rosa);
+         color: var(--cor-texto-claro);
+      }
+      .section-header {
+          color: var(--cor-destaque-rosa);
+          border-bottom: 2px solid var(--cor-secundaria-rosa);
+          padding-bottom: 0.5rem;
+      }
+      .card {
+          background-color: var(--cor-texto-claro);
+          padding: 1rem;
+          border-radius: 0.5rem;
+          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      }
+      thead {
+          background-color: var(--cor-secundaria-rosa);
+          color: var(--cor-texto-claro);
+      }
+      /* Ajuste para inputs e selects */
+      input[type="text"], input[type="number"], input[type="date"], select {
+          border: 1px solid var(--cor-secundaria-rosa);
+      }
+      button[type="submit"], .primary-button {
+          background-color: var(--cor-destaque-rosa);
+          color: var(--cor-texto-claro);
+          transition: background-color 0.2s ease;
+      }
+       button[type="submit"]:hover, .primary-button:hover {
+           background-color: #e11d48; /* rose-600 */
+       }
+       .secondary-button {
+           background-color: #9ca3af; /* gray-400 */
+           color: var(--cor-texto-claro);
+           transition: background-color 0.2s ease;
+       }
+       .secondary-button:hover {
+            background-color: #6b7280; /* gray-500 */
+       }
+    </style>
+  </head>
+  <body class="bg-pink-50 text-gray-700">
+    <div class="flex h-screen">
+      <!-- Sidebar -->
+      <aside class="w-60 sidebar-gradient flex flex-col p-4 space-y-2 shadow-xl overflow-y-auto">
+        <h1 class="text-3xl brand-font text-center mb-2 text-rose-500">Doces da Jess</h1>
+        <img id="sidebarLogo" src="data:image/jpeg;base64,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" alt="Logo Doces da Jess" />
+        <div class="text-center text-sm mb-4 space-y-1 text-gray-600">
+            <p><a href="https://www.instagram.com/docesdajess_sp" target="_blank" class="hover:text-rose-500 transition-colors"><i data-lucide="instagram" class="inline-block w-4 h-4 mr-1"></i> @docesdajess_sp</a></p>
+            <p><a href="https://wa.me/5511961510581" target="_blank" class="hover:text-rose-500 transition-colors"><i data-lucide="phone" class="inline-block w-4 h-4 mr-1"></i> (11) 96151-0581</a></p>
+        </div>
+        <button onclick="showSection('inicio_dashboard')" class="sidebar-button p-2 rounded text-left">Início / Dashboard</button>
+        <button onclick="showSection('vendas')" class="sidebar-button p-2 rounded text-left">Vendas</button>
+        <button onclick="showSection('produtos')" class="sidebar-button p-2 rounded text-left">Produtos/Cardápio</button>
+        <button onclick="showSection('estoque')" class="sidebar-button p-2 rounded text-left">Estoque</button>
+        <button onclick="showSection('clientes')" class="sidebar-button p-2 rounded text-left">Clientes</button>
+        <button onclick="showSection('relatorios')" class="sidebar-button p-2 rounded text-left">Relatórios</button>
+        <button onclick="showSection('graficos_avancados')" class="sidebar-button p-2 rounded text-left">Gráficos e Análises</button>
+        <button onclick="showSection('meta')" class="sidebar-button p-2 rounded text-left">Meta Diária</button>
+        <button onclick="exportarDados()" class="sidebar-button p-2 rounded text-left mt-4 border border-rose-300">Exportar Dados</button>
+        <label class="sidebar-button p-2 rounded text-left border border-rose-300 cursor-pointer">
+            Importar Dados
+            <input type="file" id="importFile" accept=".json" onchange="importarDados(event)" class="hidden"/>
+        </label>
+      </aside>
+
+      <!-- Main content -->
+      <main class="flex-1 overflow-auto p-6">
+
+        <section id="inicio_dashboard" class="section">
+          <h2 class="text-2xl font-bold mb-4 section-header">Informações da Empresa</h2>
+          <ul class="space-y-2 mb-6 card">
+            <li><strong>Nome Empresarial:</strong> LEANDRO DE OLIVEIRA CONTRERAS</li>
+            <li><strong>Nome Fantasia:</strong> Doces da Jess</li>
+            <li><strong>CNPJ:</strong> 60.765.939/0001-79</li>
+            <li><strong>Capital Social:</strong> R$3.000</li>
+            <li><strong>Endereço:</strong> Rua São Vicente, 121 – Bela Vista – São Paulo – SP – CEP 01314-010</li>
+            <li><strong>Atividade Principal:</strong> Fabricação de produtos de padaria e confeitaria com produção própria</li>
+            <li><strong>Atividades Secundárias:</strong> Salgados, marmitas, lanches, bebidas, doces diversos e revenda</li>
+            <li><strong>Contato:</strong> Instagram: <a href="https://www.instagram.com/docesdajess_sp" target="_blank" class="text-rose-500 hover:underline">@docesdajess_sp</a> | WhatsApp: <a href="https://wa.me/5511961510581" target="_blank" class="text-rose-500 hover:underline">(11) 96151-0581</a></li>
+          </ul>
+          <h2 class="text-2xl font-bold mb-4 section-header">Dashboard Resumo</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="card">
+                <label for="logoInput" class="block font-semibold mb-1">Logo da Empresa (upload):</label>
+                <input type="file" id="logoInput" accept="image/*" class="mb-2"/>
+                <img id="logoPreview" src="" alt="Prévia do Logo" class="hidden" />
+            </div>
+            <div class="card text-lg font-semibold">
+                Lucro Total Estimado: R$ <span id="lucroTotal">0.00</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-semibold">Resumo de Vendas</h3>
+                <div class="flex items-center space-x-2">
+                    <label for="tipoGraficoDashboard" class="text-sm">Tipo de gráfico:</label>
+                    <select id="tipoGraficoDashboard" class="p-1 border rounded bg-white text-sm">
+                        <option value="bar">Barras</option>
+                        <option value="line">Linha</option>
+                        <option value="pie">Pizza</option>
+                    </select>
+                    <label for="periodoGraficoDashboard" class="text-sm">Período:</label>
+                    <select id="periodoGraficoDashboard" class="p-1 border rounded bg-white text-sm">
+                        <option value="semanal">Semanal</option>
+                        <option value="diario">Diário</option>
+                        <option value="mensal">Mensal</option>
+                    </select>
+                </div>
+            </div>
+            <canvas id="vendasChart" height="150"></canvas>
+          </div>
+        </section>
+
+        <section id="vendas" class="section hidden">
+          <h2 class="text-2xl font-bold mb-4 section-header">Registro de Vendas</h2>
+          <form id="vendaForm" class="space-y-4 card mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <input type="date" id="dataVenda" class="p-2 border rounded" required />
+              <select id="produtoVenda" class="p-2 border rounded bg-white" required>
+                  <option value="" disabled selected>Selecione o Produto</option>
+              </select>
+              <input type="number" id="quantidadeVenda" placeholder="Quantidade" class="p-2 border rounded" required min="1" />
+              <input type="number" id="valorVenda" placeholder="Valor Total (R$)" class="p-2 border rounded" required min="0" step="0.01" />
+            </div>
+            <button type="submit" class="primary-button px-4 py-2 rounded">Registrar Venda</button>
+          </form>
+          <h3 class="text-xl font-bold mb-2 section-header">Histórico de Vendas</h3>
+          <div class="card mb-4">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div>
+                      <label for="filtroVendasPeriodo" class="block text-sm font-medium mb-1">Filtrar por período:</label>
+                      <select id="filtroVendasPeriodo" class="p-2 border rounded bg-white w-full">
+                          <option value="todos">Todos os períodos</option>
+                          <option value="hoje">Hoje</option>
+                          <option value="semana">Esta semana</option>
+                          <option value="mes">Este mês</option>
+                          <option value="personalizado">Período personalizado</option>
+                      </select>
+                  </div>
+                  <div id="periodoPersonalizadoContainer" class="hidden grid grid-cols-2 gap-2">
+                      <div>
+                          <label for="dataInicio" class="block text-sm font-medium mb-1">Data inicial:</label>
+                          <input type="date" id="dataInicio" class="p-2 border rounded w-full" />
+                      </div>
+                      <div>
+                          <label for="dataFim" class="block text-sm font-medium mb-1">Data final:</label>
+                          <input type="date" id="dataFim" class="p-2 border rounded w-full" />
+                      </div>
+                  </div>
+                  <div>
+                      <label for="filtroProdutoVenda" class="block text-sm font-medium mb-1">Filtrar por produto:</label>
+                      <select id="filtroProdutoVenda" class="p-2 border rounded bg-white w-full">
+                          <option value="todos">Todos os produtos</option>
+                      </select>
+                  </div>
+                  <div>
+                      <label for="buscarVenda" class="block text-sm font-medium mb-1">Buscar:</label>
+                      <input type="text" id="buscarVenda" placeholder="Buscar por produto..." class="p-2 border rounded w-full" />
+                  </div>
+              </div>
+              <div class="flex justify-end">
+                  <button id="aplicarFiltrosVendas" class="primary-button px-4 py-2 rounded">Aplicar Filtros</button>
+                  <button id="limparFiltrosVendas" class="secondary-button px-4 py-2 rounded ml-2">Limpar Filtros</button>
+              </div>
+          </div>
+          <div class="card">
+              <table class="w-full table-auto">
+                <thead>
+                  <tr>
+                      <th class="p-2 text-left">Data</th>
+                      <th class="p-2 text-left">Produto</th>
+                      <th class="p-2 text-left">Qtd</th>
+                      <th class="p-2 text-left">Valor</th>
+                      <th class="p-2 text-left">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="vendasTabela"></tbody>
+              </table>
+          </div>
+        </section>
+
+        <section id="produtos" class="section hidden">
+          <h2 class="text-2xl font-bold mb-4 section-header">Produtos / Cardápio</h2>
+          <div class="card mb-6">
+              <h3 class="text-xl font-semibold mb-3">Adicionar/Editar Produto</h3>
+              <form id="produtoForm" class="space-y-3">
+                  <input type="hidden" id="produtoId" />
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <input type="text" id="produtoNome" placeholder="Nome do Produto" class="p-2 border rounded" required />
+                      <select id="produtoCategoria" class="p-2 border rounded bg-white">
+                          <option value="" disabled selected>Selecione a Categoria</option>
+                          <option value="Docinhos">Docinhos</option>
+                          <option value="Bolos">Bolos</option>
+                          <option value="Mousses">Mousses</option>
+                          <option value="Pães de Mel">Pães de Mel</option>
+                          <option value="Salgados">Salgados</option>
+                          <option value="Outros">Outros</option>
+                      </select>
+                  </div>
+                  <div>
+                      <label for="produtoSabores" class="block text-sm font-medium mb-1">Sabores disponíveis (separados por vírgula):</label>
+                      <input type="text" id="produtoSabores" placeholder="Ex: Chocolate, Morango, Limão" class="p-2 border rounded w-full" />
+                  </div>
+                  <div>
+                      <label for="produtoDetalhes" class="block text-sm font-medium mb-1">Detalhes adicionais:</label>
+                      <textarea id="produtoDetalhes" placeholder="Informações adicionais sobre o produto" class="p-2 border rounded w-full" rows="2"></textarea>
+                  </div>
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <input type="number" id="produtoPreco" placeholder="Preço (R$)" class="p-2 border rounded" required min="0" step="0.01" />
+                      <input type="text" id="produtoPromocao" placeholder="Promoção (ex: 2 por R$20)" class="p-2 border rounded" />
+                      <input type="number" id="produtoCusto" placeholder="Custo Estimado (R$)" class="p-2 border rounded" min="0" step="0.01" />
+                  </div>
+                  <button type="submit" id="produtoSubmitButton" class="primary-button px-4 py-2 rounded">Adicionar Produto</button>
+                  <button type="button" id="produtoCancelButton" class="secondary-button px-4 py-2 rounded hidden" onclick="cancelarEdicaoProduto()">Cancelar Edição</button>
+              </form>
+          </div>
+
+          <div class="card mb-4">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div>
+                      <label for="filtroCategoriasProduto" class="block text-sm font-medium mb-1">Filtrar por categoria:</label>
+                      <select id="filtroCategoriasProduto" class="p-2 border rounded bg-white w-full">
+                          <option value="todas">Todas as categorias</option>
+                          <option value="Docinhos">Docinhos</option>
+                          <option value="Bolos">Bolos</option>
+                          <option value="Mousses">Mousses</option>
+                          <option value="Pães de Mel">Pães de Mel</option>
+                          <option value="Salgados">Salgados</option>
+                          <option value="Outros">Outros</option>
+                      </select>
+                  </div>
+                  <div>
+                      <label for="filtroSaboresProduto" class="block text-sm font-medium mb-1">Filtrar por sabor:</label>
+                      <select id="filtroSaboresProduto" class="p-2 border rounded bg-white w-full">
+                          <option value="todos">Todos os sabores</option>
+                      </select>
+                  </div>
+                  <div>
+                      <label for="buscarProduto" class="block text-sm font-medium mb-1">Buscar:</label>
+                      <input type="text" id="buscarProduto" placeholder="Buscar por nome..." class="p-2 border rounded w-full" />
+                  </div>
+              </div>
+              <div class="flex justify-end">
+                  <button id="aplicarFiltrosProdutos" class="primary-button px-4 py-2 rounded">Aplicar Filtros</button>
+                  <button id="limparFiltrosProdutos" class="secondary-button px-4 py-2 rounded ml-2">Limpar Filtros</button>
+              </div>
+          </div>
+
+          <div class="card">
+              <table class="w-full table-auto">
+                <thead>
+                  <tr>
+                    <th class="p-2 text-left">Produto</th>
+                    <th class="p-2 text-left">Categoria</th>
+                    <th class="p-2 text-left">Sabores</th>
+                    <th class="p-2 text-left">Preço</th>
+                    <th class="p-2 text-left">Custo</th>
+                    <th class="p-2 text-left">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="produtosTabela">
+                </tbody>
+              </table>
+          </div>
+        </section>
+
+        <section id="estoque" class="section hidden">
+          <h2 class="text-2xl font-bold mb-4 section-header">Gerenciar Estoque</h2>
+          <form id="estoqueForm" class="mb-6 p-4 border rounded card">
+            <h3 class="text-xl font-semibold mb-3">Adicionar/Editar Item ao Estoque</h3>
+            <input type="hidden" id="itemId" />
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <input type="text" id="itemNome" placeholder="Nome do Item" class="p-2 border rounded" required />
+              <input type="number" id="itemQuantidade" placeholder="Quantidade" class="p-2 border rounded" required min="0" step="any" />
+              <input type="text" id="itemUnidade" placeholder="Unidade (ex: kg, unid)" class="p-2 border rounded" required />
+              <select id="itemTipo" class="p-2 border rounded bg-white" required>
+                <option value="" disabled selected>Tipo</option>
+                <option value="Matéria-prima">Matéria-prima</option>
+                <option value="Produto Pronto">Produto Pronto</option>
+                <option value="Embalagem">Embalagem</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </div>
+             <div class="mt-2">
+                 <label for="itemEstoqueMinimo" class="text-sm">Estoque Mínimo (Alerta):</label>
+                 <input type="number" id="itemEstoqueMinimo" placeholder="Opcional" class="p-1 border rounded w-24" min="0" step="any" />
+             </div>
+            <button type="submit" id="estoqueSubmitButton" class="primary-button mt-4 px-4 py-2 rounded">Adicionar Item</button>
+            <button type="button" id="estoqueCancelButton" class="secondary-button mt-4 px-4 py-2 rounded hidden" onclick="cancelarEdicaoEstoque()">Cancelar Edição</button>
+          </form>
+
+          <h2 class="text-2xl font-bold mb-4 section-header">Estoque Atual</h2>
+          <div class="card mb-4">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div>
+                      <label for="filtroTipoEstoque" class="block text-sm font-medium mb-1">Filtrar por tipo:</label>
+                      <select id="filtroTipoEstoque" class="p-2 border rounded bg-white w-full">
+                          <option value="todos">Todos os tipos</option>
+                          <option value="Matéria-prima">Matéria-prima</option>
+                          <option value="Produto Pronto">Produto Pronto</option>
+                          <option value="Embalagem">Embalagem</option>
+                          <option value="Outro">Outro</option>
+                      </select>
+                  </div>
+                  <div>
+                      <label for="filtroEstoqueBaixo" class="block text-sm font-medium mb-1">Filtrar por nível:</label>
+                      <select id="filtroEstoqueBaixo" class="p-2 border rounded bg-white w-full">
+                          <option value="todos">Todos os níveis</option>
+                          <option value="baixo">Estoque baixo</option>
+                          <option value="normal">Estoque normal</option>
+                      </select>
+                  </div>
+                  <div>
+                      <label for="buscarEstoque" class="block text-sm font-medium mb-1">Buscar:</label>
+                      <input type="text" id="buscarEstoque" placeholder="Buscar por nome..." class="p-2 border rounded w-full" />
+                  </div>
+              </div>
+              <div class="flex justify-end">
+                  <button id="aplicarFiltrosEstoque" class="primary-button px-4 py-2 rounded">Aplicar Filtros</button>
+                  <button id="limparFiltrosEstoque" class="secondary-button px-4 py-2 rounded ml-2">Limpar Filtros</button>
+              </div>
+          </div>
+          <div class="card">
+              <div id="alertasEstoque" class="mb-4"></div> <!-- Área para alertas -->
+              <table class="w-full table-auto">
+                <thead>
+                  <tr>
+                    <th class="p-2 text-left">Item</th>
+                    <th class="p-2 text-left">Quantidade</th>
+                    <th class="p-2 text-left">Tipo</th>
+                    <th class="p-2 text-left">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="estoqueTabela">
+                </tbody>
+              </table>
+          </div>
+        </section>
+
+        <section id="clientes" class="section hidden">
+          <h2 class="text-2xl font-bold mb-4 section-header">Clientes</h2>
+          <div class="card mb-6">
+              <h3 class="text-xl font-semibold mb-3">Adicionar/Editar Cliente</h3>
+              <form id="clienteForm" class="space-y-3">
+                  <input type="hidden" id="clienteId" />
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <input type="text" id="clienteNome" placeholder="Nome do Cliente" class="p-2 border rounded" required />
+                      <input type="tel" id="clienteTelefone" placeholder="Telefone/WhatsApp" class="p-2 border rounded" />
+                  </div>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <input type="email" id="clienteEmail" placeholder="E-mail" class="p-2 border rounded" />
+                      <input type="text" id="clienteEndereco" placeholder="Endereço" class="p-2 border rounded" />
+                  </div>
+                  <div>
+                      <label for="clienteObservacoes" class="block text-sm font-medium mb-1">Observações:</label>
+                      <textarea id="clienteObservacoes" placeholder="Preferências, restrições alimentares, etc." class="p-2 border rounded w-full" rows="2"></textarea>
+                  </div>
+                  <div>
+                      <label class="block text-sm font-medium mb-1">Sistema de Fidelidade:</label>
+                      <div class="flex items-center space-x-1">
+                          <span>Estrelas:</span>
+                          <div id="clienteEstrelas" class="flex">
+                              <button type="button" class="text-gray-300 hover:text-yellow-400" data-estrela="1">★</button>
+                              <button type="button" class="text-gray-300 hover:text-yellow-400" data-estrela="2">★</button>
+                              <button type="button" class="text-gray-300 hover:text-yellow-400" data-estrela="3">★</button>
+                              <button type="button" class="text-gray-300 hover:text-yellow-400" data-estrela="4">★</button>
+                              <button type="button" class="text-gray-300 hover:text-yellow-400" data-estrela="5">★</button>
+                          </div>
+                          <input type="hidden" id="clienteEstrelasValor" value="0" />
+                      </div>
+                  </div>
+                  <button type="submit" id="clienteSubmitButton" class="primary-button px-4 py-2 rounded">Adicionar Cliente</button>
+                  <button type="button" id="clienteCancelButton" class="secondary-button px-4 py-2 rounded hidden" onclick="cancelarEdicaoCliente()">Cancelar Edição</button>
+              </form>
+          </div>
+
+          <div class="card mb-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                      <label for="filtroEstrelas" class="block text-sm font-medium mb-1">Filtrar por estrelas:</label>
+                      <select id="filtroEstrelas" class="p-2 border rounded bg-white w-full">
+                          <option value="todas">Todas as estrelas</option>
+                          <option value="1">1 estrela ou mais</option>
+                          <option value="2">2 estrelas ou mais</option>
+                          <option value="3">3 estrelas ou mais</option>
+                          <option value="4">4 estrelas ou mais</option>
+                          <option value="5">5 estrelas</option>
+                      </select>
+                  </div>
+                  <div>
+                      <label for="buscarCliente" class="block text-sm font-medium mb-1">Buscar:</label>
+                      <input type="text" id="buscarCliente" placeholder="Buscar por nome, telefone ou e-mail..." class="p-2 border rounded w-full" />
+                  </div>
+              </div>
+              <div class="flex justify-end">
+                  <button id="aplicarFiltrosClientes" class="primary-button px-4 py-2 rounded">Aplicar Filtros</button>
+                  <button id="limparFiltrosClientes" class="secondary-button px-4 py-2 rounded ml-2">Limpar Filtros</button>
+              </div>
+          </div>
+
+          <div class="card">
+              <table class="w-full table-auto">
+                <thead>
+                  <tr>
+                    <th class="p-2 text-left">Nome</th>
+                    <th class="p-2 text-left">Telefone</th>
+                    <th class="p-2 text-left">E-mail</th>
+                    <th class="p-2 text-left">Fidelidade</th>
+                    <th class="p-2 text-left">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="clientesTabela">
+                    <!-- Conteúdo gerado via JS -->
+                </tbody>
+              </table>
+          </div>
+        </section>
+
+        <section id="relatorios" class="section hidden">
+          <h2 class="text-2xl font-bold mb-4 section-header">Relatórios</h2>
+           <div class="card mb-4">
+               <p>Em breve: Relatórios detalhados de vendas, estoque e clientes.</p>
+           </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+             <div class="card">
+                <h3 class="font-semibold mb-2">Produtos Mais Vendidos (Exemplo)</h3>
+                <canvas id="produtosVendidosChart"></canvas>
+             </div>
+             <div class="card">
+                <h3 class="font-semibold mb-2">Nível de Estoque (Exemplo)</h3>
+                <canvas id="nivelEstoqueChart"></canvas>
+             </div>
+          </div>
+        </section>
+
+        <section id="graficos_avancados" class="section hidden">
+            <h2 class="text-2xl font-bold mb-4 section-header">Gráficos e Análises</h2>
+            <div class="card mb-6">
+                <h3 class="text-xl font-semibold mb-3">Configurações do Gráfico</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="graficoTipo" class="block text-sm font-medium mb-1">Tipo de gráfico:</label>
+                        <select id="graficoTipo" class="p-2 border rounded bg-white w-full">
+                            <option value="bar">Barra</option>
+                            <option value="line">Linha</option>
+                            <option value="pie">Pizza</option>
+                            <option value="doughnut">Rosca</option>
+                            <option value="polarArea">Área Polar</option>
+                            <option value="radar">Radar</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="graficoDados" class="block text-sm font-medium mb-1">Dados a visualizar:</label>
+                        <select id="graficoDados" class="p-2 border rounded bg-white w-full">
+                            <option value="vendas_semanais">Vendas Semanais (Valor)</option>
+                            <option value="vendas_mensais">Vendas Mensais (Valor)</option>
+                            <option value="vendas_diarias">Vendas Diárias (Valor)</option>
+                            <option value="produtos_vendidos_qtd">Produtos Mais Vendidos (Qtd)</option>
+                            <option value="produtos_vendidos_valor">Produtos Mais Vendidos (Valor)</option>
+                            <option value="nivel_estoque">Nível de Estoque (Itens)</option>
+                            <option value="lucratividade_produto">Lucratividade por Produto</option>
+                            <option value="vendas_por_categoria">Vendas por Categoria</option>
+                            <option value="vendas_por_cliente">Vendas por Cliente</option>
+                            <option value="metas_realizadas">Metas vs Realizado</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="opcoesAvancadas" class="border-t pt-4 mt-4">
+                    <h4 class="font-medium mb-2">Opções Avançadas</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="filtroDataInicio" class="block text-sm font-medium mb-1">Data inicial:</label>
+                            <input type="date" id="filtroDataInicio" class="p-2 border rounded w-full" />
+                        </div>
+                        <div>
+                            <label for="filtroDataFim" class="block text-sm font-medium mb-1">Data final:</label>
+                            <input type="date" id="filtroDataFim" class="p-2 border rounded w-full" />
+                        </div>
+                        <div>
+                            <label for="limiteDados" class="block text-sm font-medium mb-1">Limite de dados:</label>
+                            <select id="limiteDados" class="p-2 border rounded bg-white w-full">
+                                <option value="5">Top 5</option>
+                                <option value="10" selected>Top 10</option>
+                                <option value="20">Top 20</option>
+                                <option value="0">Todos</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label for="produtosComparar" class="block text-sm font-medium mb-1">Comparar produtos específicos:</label>
+                        <select id="produtosComparar" class="p-2 border rounded bg-white w-full" multiple>
+                            <!-- Opções serão preenchidas via JavaScript -->
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">Segure Ctrl (ou Cmd) para selecionar múltiplos produtos</p>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end mt-4">
+                    <button onclick="atualizarGraficoAvancado()" class="primary-button px-4 py-2 rounded">Gerar Gráfico</button>
+                    <button onclick="exportarGrafico()" class="secondary-button px-4 py-2 rounded ml-2">Exportar Gráfico</button>
+                </div>
+            </div>
+            <div class="card mb-6">
+                <canvas id="graficoAvancadoCanvas"></canvas>
+            </div>
+            <div class="card">
+                <h3 class="text-xl font-semibold mb-3">Análises e Sugestões</h3>
+                <div id="analisesSugestoes" class="space-y-2 text-sm">
+                    <!-- Conteúdo gerado via JS -->
+                </div>
+            </div>
+        </section>
+
+        <section id="meta" class="section hidden">
+          <h2 class="text-2xl font-bold mb-4 section-header">Meta Diária</h2>
+          <div class="card">
+              <label for="metaInput" class="block mb-2 font-semibold">Definir Meta de vendas diárias (R$):</label>
+              <input type="number" id="metaInput" class="p-2 border rounded mb-4" value="100" min="0" />
+              <p class="mb-2">Progresso da Meta:</p>
+              <div id="progressoMeta" class="w-full bg-rose-100 h-6 rounded overflow-hidden">
+                <div id="barraMeta" class="bg-rose-400 h-6 text-center text-white text-sm">0%</div>
+              </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <script>
+      lucide.createIcons();
+
+      function showSection(sectionId) {
+        document.querySelectorAll('.section').forEach(section => section.classList.add('hidden'));
+        const sectionToShow = document.getElementById(sectionId);
+        if (sectionToShow) sectionToShow.classList.remove('hidden');
+        else document.getElementById('inicio_dashboard').classList.remove('hidden');
+      }
+
+      const STORAGE_KEY = 'docesDaJessData_v2'; // Incrementa versão se estrutura mudar
+      let appData = {
+          vendas: [],
+          estoque: [],
+          produtos: [],
+          metaDiaria: 100,
+          config: { logoUrl: null }
+      };
+
+      // --- DOM Elements --- (Simplified for brevity)
+      const vendasTabelaBody = document.getElementById('vendasTabela');
+      const produtoVendaSelect = document.getElementById('produtoVenda');
+      const produtosTabelaBody = document.getElementById('produtosTabela');
+      const produtoForm = document.getElementById('produtoForm');
+      const estoqueTabelaBody = document.getElementById('estoqueTabela');
+      const estoqueForm = document.getElementById('estoqueForm');
+      const metaInput = document.getElementById('metaInput');
+      const barraMeta = document.getElementById('barraMeta');
+      const logoInput = document.getElementById('logoInput');
+      const logoPreview = document.getElementById('logoPreview');
+      const vendasChartCanvas = document.getElementById('vendasChart')?.getContext('2d');
+      const lucroTotalSpan = document.getElementById('lucroTotal');
+      const graficoAvancadoCanvas = document.getElementById('graficoAvancadoCanvas')?.getContext('2d');
+      const graficoTipoSelect = document.getElementById('graficoTipo');
+      const graficoDadosSelect = document.getElementById('graficoDados');
+      const alertasEstoqueDiv = document.getElementById('alertasEstoque');
+      const analisesSugestoesDiv = document.getElementById('analisesSugestoes');
+
+      // --- Data Functions --- 
+      function salvarDados() {
+          try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+          } catch (error) {
+              console.error("Erro ao salvar dados no localStorage:", error);
+              alert("Erro ao salvar dados. Verifique se o localStorage está habilitado e não está cheio.");
+          }
+      }
+
+      function carregarDados() {
+          const dadosSalvos = localStorage.getItem(STORAGE_KEY);
+          if (dadosSalvos) {
+              try {
+                  appData = JSON.parse(dadosSalvos);
+                  // Default values for potentially missing keys in older data
+                  appData.vendas = appData.vendas || [];
+                  appData.estoque = appData.estoque || [];
+                  appData.produtos = appData.produtos || [];
+                  appData.metaDiaria = appData.metaDiaria || 100;
+                  appData.config = appData.config || { logoUrl: null };
+                  // Ensure IDs exist
+                  appData.estoque.forEach((item, index) => item.id = item.id || gerarIdUnico('est', index));
+                  appData.produtos.forEach((item, index) => item.id = item.id || gerarIdUnico('prod', index));
+                  appData.vendas.forEach((item, index) => item.id = item.id || gerarIdUnico('venda', index));
+              } catch (error) {
+                  console.error("Erro ao carregar dados do localStorage:", error);
+                  alert("Erro ao carregar dados salvos. Os dados podem estar corrompidos. Iniciando com dados padrão.");
+                  inicializarDadosPadrao(); // Reset to default if parsing fails
+              }
+          } else {
+              inicializarDadosPadrao();
+          }
+      }
+
+      function inicializarDadosPadrao() {
+           appData = {
+              vendas: [],
+              estoque: [
+                { id: gerarIdUnico('est'), nome: 'Forminhas', quantidade: 500, unidade: 'unid', tipo: 'Embalagem', estoqueMinimo: 100 },
+                { id: gerarIdUnico('est'), nome: 'M&M\'s', quantidade: 500, unidade: 'g', tipo: 'Matéria-prima', estoqueMinimo: 100 },
+                { id: gerarIdUnico('est'), nome: 'Granulado', quantidade: 1.5, unidade: 'kg', tipo: 'Matéria-prima', estoqueMinimo: 0.5 },
+                { id: gerarIdUnico('est'), nome: 'Creme de Leite', quantidade: 15, unidade: 'unidades', tipo: 'Matéria-prima', estoqueMinimo: 5 },
+                { id: gerarIdUnico('est'), nome: 'Leite Condensado', quantidade: 7, unidade: 'unidades', tipo: 'Matéria-prima', estoqueMinimo: 5 },
+                { id: gerarIdUnico('est'), nome: 'Doce de Leite (pote)', quantidade: 2, unidade: 'potes', tipo: 'Matéria-prima', estoqueMinimo: 1 }, // Para pão de mel
+              ],
+              produtos: [
+                { id: gerarIdUnico('prod'), nome: 'Caixinha 4 Docinhos', detalhes: "Brigadeiro, Beijinho, Amendoim, M&M\'s, Prestígio", preco: 12, promocao: '2 por R$20', custo: 4 },
+                { id: gerarIdUnico('prod'), nome: 'Pão de Mel', detalhes: 'Recheio: Doce de Leite', preco: 7, promocao: '2 por R$12 / Caixa 18un R$28', custo: 2.5 }, // Custo estimado
+                { id: gerarIdUnico('prod'), nome: 'Mousse', detalhes: 'Limão, Morango, Maracujá', preco: 12, promocao: '2 por R$20', custo: 3 },
+                { id: gerarIdUnico('prod'), nome: 'Bolo de Pote', detalhes: 'Limão, Abacaxi, Chocolate, Prestígio, Maracujá, Morango c/ Choc, Ninho c/ Morango, Ovomaltine', preco: 12, promocao: '2 por R$20', custo: 5 },
+              ],
+              metaDiaria: 100,
+              config: { logoUrl: null }
+          };
+          console.log("Inicializando com dados padrão.");
+      }
+
+      function gerarIdUnico(prefixo = 'id', index = 0) {
+          return `${prefixo}_${Date.now()}_${index}_${Math.random().toString(36).substr(2, 9)}`;
+      }
+
+      function exportarDados() {
+          const dataStr = JSON.stringify(appData, null, 2); // Pretty print JSON
+          const dataBlob = new Blob([dataStr], { type: 'application/json' });
+          const url = URL.createObjectURL(dataBlob);
+          const link = document.createElement('a');
+          link.href = url;
+          const timestamp = new Date().toISOString().slice(0, 10);
+          link.download = `docesdajess_backup_${timestamp}.json`;
+          link.click();
+          URL.revokeObjectURL(url);
+          alert('Dados exportados com sucesso!');
+      }
+
+      function importarDados(event) {
+          const file = event.target.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = function(e) {
+              try {
+                  const importedData = JSON.parse(e.target.result);
+                  // Validação básica da estrutura importada
+                  if (importedData && importedData.vendas && importedData.estoque && importedData.produtos) {
+                      if (confirm("Importar dados substituirá os dados atuais. Deseja continuar?")) {
+                          appData = importedData;
+                          salvarDados();
+                          atualizarTodasTabelasEGraficos();
+                          alert('Dados importados com sucesso!');
+                      }
+                  } else {
+                      alert('Arquivo inválido ou estrutura de dados incorreta.');
+                  }
+              } catch (error) {
+                  console.error("Erro ao importar dados:", error);
+                  alert('Erro ao ler o arquivo JSON.');
+              }
+          };
+          reader.readAsText(file);
+          event.target.value = null; // Limpa o input file
+      }
+
+      // --- UI Update Functions --- 
+
+      function atualizarTabelaVendas() {
+        vendasTabelaBody.innerHTML = '';
+        [...appData.vendas].reverse().forEach((v) => { // Mostra mais recentes primeiro
+          const produtoInfo = appData.produtos.find(p => p.id === v.produtoId) || { nome: 'Produto Removido' };
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="p-2 border-t">${v.data}</td>
+            <td class="p-2 border-t">${produtoInfo.nome}</td>
+            <td class="p-2 border-t">${v.qtd}</td>
+            <td class="p-2 border-t">R$ ${v.valor.toFixed(2)}</td>
+            <td class="p-2 border-t">
+                <button class="action-button delete-button" onclick="removerVenda('${v.id}')">Remover</button>
+            </td>
+          `;
+          vendasTabelaBody.appendChild(tr);
+        });
+      }
+
+      function atualizarTabelaProdutos() {
+          produtosTabelaBody.innerHTML = '';
+          appData.produtos.forEach(p => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                  <td class="p-2 border-t">${p.nome}</td>
+                  <td class="p-2 border-t">${p.detalhes || '-'}</td>
+                  <td class="p-2 border-t">R$ ${p.preco.toFixed(2)} ${p.promocao ? `<span class="text-xs text-green-600">(${p.promocao})</span>` : ''}</td>
+                  <td class="p-2 border-t">${p.custo ? `R$ ${p.custo.toFixed(2)}` : '-'}</td>
+                  <td class="p-2 border-t">
+                      <button class="action-button edit-button" onclick="prepararEdicaoProduto('${p.id}')">Editar</button>
+                      <button class="action-button delete-button" onclick="removerProduto('${p.id}')">Remover</button>
+                  </td>
+              `;
+              produtosTabelaBody.appendChild(tr);
+          });
+          atualizarSelectProdutosVenda();
+      }
+
+      function atualizarSelectProdutosVenda() {
+          const currentValue = produtoVendaSelect.value;
+          produtoVendaSelect.innerHTML = '<option value="" disabled selected>Selecione o Produto</option>';
+          appData.produtos.forEach(p => {
+              const option = document.createElement('option');
+              option.value = p.id;
+              option.textContent = p.nome;
+              produtoVendaSelect.appendChild(option);
+          });
+          // Tenta restaurar valor selecionado anteriormente, se ainda existir
+          if (appData.produtos.some(p => p.id === currentValue)) {
+              produtoVendaSelect.value = currentValue;
+          }
+      }
+
+      function atualizarTabelaEstoque() {
+        estoqueTabelaBody.innerHTML = '';
+        let alertasHtml = '';
+        appData.estoque.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(item => {
+          const tr = document.createElement('tr');
+          let quantidadeClasse = '';
+          const quantidadeNum = parseFloat(item.quantidade);
+          const estoqueMinimoNum = parseFloat(item.estoqueMinimo);
+          let alerta = false;
+
+          if (!isNaN(quantidadeNum) && !isNaN(estoqueMinimoNum) && estoqueMinimoNum > 0 && quantidadeNum <= estoqueMinimoNum) {
+              quantidadeClasse = 'text-red-600 font-bold';
+              alerta = true;
+              alertasHtml += `<p class="text-red-600 text-sm"><i data-lucide="alert-triangle" class="inline-block w-4 h-4 mr-1"></i> Alerta: Estoque baixo para ${item.nome} (${item.quantidade} ${item.unidade})</p>`;
+          }
+
+          tr.innerHTML = `
+            <td class="p-2 border-t">${item.nome}</td>
+            <td class="p-2 border-t ${quantidadeClasse}">${item.quantidade} ${item.unidade}</td>
+            <td class="p-2 border-t">${item.tipo}</td>
+            <td class="p-2 border-t">
+                <button class="action-button edit-button" onclick="prepararEdicaoEstoque('${item.id}')">Editar</button>
+                <button class="action-button delete-button" onclick="removerItemEstoque('${item.id}')">Remover</button>
+            </td>
+          `;
+          estoqueTabelaBody.appendChild(tr);
+        });
+        alertasEstoqueDiv.innerHTML = alertasHtml || '<p class="text-green-600 text-sm">Nenhum alerta de estoque baixo.</p>';
+        lucide.createIcons(); // Recria ícones de alerta
+      }
+
+      function atualizarMeta() {
+        const hoje = new Date().toISOString().slice(0, 10);
+        const totalHoje = appData.vendas
+          .filter(v => v.data === hoje)
+          .reduce((acc, v) => acc + v.valor, 0);
+        const progresso = appData.metaDiaria > 0 ? Math.min((totalHoje / appData.metaDiaria) * 100, 100) : 0;
+        barraMeta.style.width = progresso + '%';
+        barraMeta.textContent = progresso.toFixed(0) + '%';
+      }
+
+      function agruparVendas(periodo) {
+          const grupos = {};
+          appData.vendas.forEach(v => {
+              try {
+                  const dataVenda = new Date(v.data + 'T00:00:00');
+                  if (isNaN(dataVenda.getTime())) return;
+
+                  let key;
+                  if (periodo === 'diario') {
+                      key = v.data;
+                  } else if (periodo === 'semanal') {
+                      const primeiroDiaSemana = new Date(dataVenda);
+                      primeiroDiaSemana.setDate(dataVenda.getDate() - dataVenda.getDay()); // Domingo
+                      key = primeiroDiaSemana.toISOString().slice(0, 10);
+                  } else if (periodo === 'mensal') {
+                      key = v.data.slice(0, 7); // YYYY-MM
+                  }
+
+                  if (key) {
+                      if (!grupos[key]) grupos[key] = { valor: 0, qtd: 0 };
+                      grupos[key].valor += v.valor;
+                      grupos[key].qtd += v.qtd;
+                  }
+              } catch (error) {
+                  console.error(`Erro ao processar data da venda: ${v.data}`, error);
+              }
+          });
+          return grupos;
+      }
+
+      let vendasChartInstance = null;
+      function atualizarDashboard() {
+        if (!vendasChartCanvas) return;
+        const dadosSemana = agruparVendas('semanal');
+        const labels = Object.keys(dadosSemana).sort();
+        const valores = labels.map(l => dadosSemana[l].valor);
+        const lucroTotal = appData.vendas.reduce((acc, v) => acc + v.valor, 0);
+        lucroTotalSpan.textContent = lucroTotal.toFixed(2);
+
+        if (vendasChartInstance) {
+          vendasChartInstance.data.labels = labels;
+          vendasChartInstance.data.datasets[0].data = valores;
+          vendasChartInstance.update();
+        } else {
+          vendasChartInstance = new Chart(vendasChartCanvas, {
+            type: 'bar',
+            data: {
+              labels,
+              datasets: [{
+                label: 'Vendas Semanais (R$)',
+                data: valores,
+                backgroundColor: 'var(--cor-destaque-rosa)',
+                borderColor: 'var(--cor-secundaria-rosa)',
+                borderWidth: 1,
+              }]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+          });
+        }
+      }
+
+      // --- Action Functions --- 
+
+      // Vendas
+      document.getElementById('vendaForm').addEventListener('submit', e => {
+        e.preventDefault();
+        const data = document.getElementById('dataVenda').value;
+        const produtoId = produtoVendaSelect.value;
+        const qtd = parseInt(document.getElementById('quantidadeVenda').value);
+        const valor = parseFloat(document.getElementById('valorVenda').value);
+
+        if (!data || !produtoId || isNaN(qtd) || isNaN(valor) || qtd <= 0 || valor <= 0) {
+          alert('Por favor, preencha todos os campos de venda corretamente.');
+          return;
+        }
+
+        appData.vendas.push({ id: gerarIdUnico('venda'), data, produtoId, qtd, valor });
+        // TODO: Integrar com estoque (diminuir quantidade do produto/ingredientes)
+        salvarDados();
+        atualizarTabelaVendas();
+        atualizarMeta();
+        atualizarDashboard();
+        atualizarAnalisesSugestoes(); // Atualiza análises
+        e.target.reset();
+        produtoVendaSelect.value = "";
+      });
+
+      function removerVenda(id) {
+          if (confirm('Tem certeza que deseja remover esta venda?')) {
+              // TODO: Reverter alteração no estoque
+              appData.vendas = appData.vendas.filter(v => v.id !== id);
+              salvarDados();
+              atualizarTabelaVendas();
+              atualizarMeta();
+              atualizarDashboard();
+              atualizarAnalisesSugestoes();
+          }
+      }
+
+      // Produtos
+      produtoForm.addEventListener('submit', e => {
+          e.preventDefault();
+          const id = document.getElementById('produtoId').value;
+          const nome = document.getElementById('produtoNome').value.trim();
+          
+          // Novos campos
+          const categoria = document.getElementById('produtoCategoria')?.value || '';
+          const sabores = document.getElementById('produtoSabores')?.value || '';
+          
+          const detalhes = document.getElementById('produtoDetalhes').value.trim();
+          const preco = parseFloat(document.getElementById('produtoPreco').value);
+          const promocao = document.getElementById('produtoPromocao').value.trim();
+          const custoInput = document.getElementById('produtoCusto').value;
+          const custo = custoInput ? parseFloat(custoInput) : null;
+
+          if (!nome || isNaN(preco) || preco < 0 || (custo !== null && isNaN(custo)) || (custo !== null && custo < 0)) {
+              alert('Preencha o nome e o preço corretamente. O custo, se informado, deve ser um número válido.');
+              return;
+          }
+
+          const produtoData = { nome, categoria, sabores, detalhes, preco, promocao, custo };
+
+          if (id) { // Editando
+              const index = appData.produtos.findIndex(p => p.id === id);
+              if (index > -1) {
+                  appData.produtos[index] = { ...appData.produtos[index], ...produtoData };
+              }
+          } else { // Adicionando
+              appData.produtos.push({ id: gerarIdUnico('prod'), ...produtoData });
+          }
+          salvarDados();
+          atualizarTabelaProdutos();
+          cancelarEdicaoProduto();
+      });
+
+      function prepararEdicaoProduto(id) {
+          const produto = appData.produtos.find(p => p.id === id);
+          if (produto) {
+              document.getElementById('produtoId').value = produto.id;
+              document.getElementById('produtoNome').value = produto.nome;
+              document.getElementById('produtoDetalhes').value = produto.detalhes || '';
+              document.getElementById('produtoPreco').value = produto.preco.toFixed(2);
+              document.getElementById('produtoPromocao').value = produto.promocao || '';
+              document.getElementById('produtoCusto').value = produto.custo ? produto.custo.toFixed(2) : '';
+              document.getElementById('produtoSubmitButton').textContent = 'Salvar Alterações';
+              document.getElementById('produtoCancelButton').classList.remove('hidden');
+              produtoForm.scrollIntoView({ behavior: 'smooth' });
+          }
+      }
+
+      function cancelarEdicaoProduto() {
+          document.getElementById('produtoId').value = '';
+          produtoForm.reset();
+          document.getElementById('produtoSubmitButton').textContent = 'Adicionar Produto';
+          document.getElementById('produtoCancelButton').classList.add('hidden');
+      }
+
+      function removerProduto(id) {
+          if (confirm('Remover este produto também removerá o histórico de vendas associado a ele nos gráficos. Continuar?')) {
+              appData.produtos = appData.produtos.filter(p => p.id !== id);
+              // Opcional: Poderia marcar vendas como 'produto removido' em vez de apagar
+              salvarDados();
+              atualizarTabelaProdutos();
+              atualizarDashboard(); // Atualiza gráficos que usam produtos
+              atualizarAnalisesSugestoes();
+          }
+      }
+
+      // Estoque
+      estoqueForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const id = document.getElementById('itemId').value;
+        const nome = document.getElementById('itemNome').value.trim();
+        const quantidade = document.getElementById('itemQuantidade').value;
+        const unidade = document.getElementById('itemUnidade').value.trim();
+        const tipo = document.getElementById('itemTipo').value;
+        const estoqueMinimoInput = document.getElementById('itemEstoqueMinimo').value;
+        const estoqueMinimo = estoqueMinimoInput ? parseFloat(estoqueMinimoInput) : null;
+
+        if (!nome || !quantidade || !unidade || !tipo || (estoqueMinimo !== null && isNaN(estoqueMinimo)) || (estoqueMinimo !== null && estoqueMinimo < 0)) {
+          alert('Preencha os campos obrigatórios corretamente. Estoque mínimo deve ser um número válido se informado.');
+          return;
+        }
+        const quantidadeNum = parseFloat(quantidade);
+        const quantidadeFinal = isNaN(quantidadeNum) ? quantidade : quantidadeNum;
+
+        const itemData = { nome, quantidade: quantidadeFinal, unidade, tipo, estoqueMinimo };
+
+        if (id) { // Editando
+            const index = appData.estoque.findIndex(item => item.id === id);
+            if (index > -1) {
+                appData.estoque[index] = { ...appData.estoque[index], ...itemData };
+            }
+        } else { // Adicionando
+            appData.estoque.push({ id: gerarIdUnico('est'), ...itemData });
+        }
+        salvarDados();
+        atualizarTabelaEstoque();
+        cancelarEdicaoEstoque();
+        atualizarAnalisesSugestoes();
+      });
+
+      function prepararEdicaoEstoque(id) {
+          const item = appData.estoque.find(item => item.id === id);
+          if (item) {
+              document.getElementById('itemId').value = item.id;
+              document.getElementById('itemNome').value = item.nome;
+              document.getElementById('itemQuantidade').value = item.quantidade;
+              document.getElementById('itemUnidade').value = item.unidade;
+              document.getElementById('itemTipo').value = item.tipo;
+              document.getElementById('itemEstoqueMinimo').value = item.estoqueMinimo ?? '';
+              document.getElementById('estoqueSubmitButton').textContent = 'Salvar Alterações';
+              document.getElementById('estoqueCancelButton').classList.remove('hidden');
+              estoqueForm.scrollIntoView({ behavior: 'smooth' });
+          }
+      }
+
+      function cancelarEdicaoEstoque() {
+          document.getElementById('itemId').value = '';
+          estoqueForm.reset();
+          document.getElementById('itemTipo').value = "";
+          document.getElementById('estoqueSubmitButton').textContent = 'Adicionar Item';
+          document.getElementById('estoqueCancelButton').classList.add('hidden');
+      }
+
+      function removerItemEstoque(id) {
+          if (confirm('Tem certeza que deseja remover este item do estoque?')) {
+              appData.estoque = appData.estoque.filter(item => item.id !== id);
+              salvarDados();
+              atualizarTabelaEstoque();
+              atualizarAnalisesSugestoes();
+          }
+      }
+
+      // Meta
+      metaInput.addEventListener('input', e => {
+        const val = parseFloat(e.target.value);
+        appData.metaDiaria = (!isNaN(val) && val >= 0) ? val : 0;
+        salvarDados();
+        atualizarMeta();
+      });
+
+      // Logo
+      logoInput.addEventListener('change', () => {
+        const file = logoInput.files[0];
+        if (file && file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = e => {
+            // Atualiza a prévia do logo
+            logoPreview.src = e.target.result;
+            logoPreview.classList.remove('hidden');
+            
+            // Atualiza o logo na sidebar
+            const sidebarLogo = document.getElementById('sidebarLogo');
+            sidebarLogo.src = e.target.result;
+            
+            // Salva a URL da imagem nos dados
+            appData.config.logoUrl = e.target.result;
+            salvarDados();
+          };
+          reader.readAsDataURL(file);
+        } else {
+          logoPreview.src = '';
+          logoPreview.classList.add('hidden');
+          appData.config.logoUrl = null;
+          salvarDados();
+          if(file) alert('Por favor, selecione um arquivo de imagem válido.');
+        }
+      });
+
+      function carregarLogoSalvo() {
+          if (appData.config.logoUrl) {
+              // Atualiza a prévia do logo
+              logoPreview.src = appData.config.logoUrl;
+              logoPreview.classList.remove('hidden');
+              
+              // Atualiza o logo na sidebar
+              const sidebarLogo = document.getElementById('sidebarLogo');
+              sidebarLogo.src = appData.config.logoUrl;
+          }
+      }
+
+      // --- Advanced Charts & Analysis --- 
+      let graficoAvancadoInstance = null;
+      function atualizarGraficoAvancado() {
+          if (!graficoAvancadoCanvas) return;
+
+          const tipoGrafico = graficoTipoSelect.value;
+          const dadosSelecionados = graficoDadosSelect.value;
+          let labels = [];
+          let data = [];
+          let chartLabel = '';
+          let backgroundColors = [
+              'rgba(244, 63, 94, 0.7)', 'rgba(192, 132, 252, 0.7)', 'rgba(45, 212, 191, 0.7)',
+              'rgba(250, 204, 21, 0.7)', 'rgba(59, 130, 246, 0.7)', 'rgba(234, 179, 8, 0.7)'
+          ];
+          let borderColors = [
+              'rgba(244, 63, 94, 1)', 'rgba(192, 132, 252, 1)', 'rgba(45, 212, 191, 1)',
+              'rgba(250, 204, 21, 1)', 'rgba(59, 130, 246, 1)', 'rgba(234, 179, 8, 1)'
+          ];
+
+          switch (dadosSelecionados) {
+              case 'vendas_semanais':
+              case 'vendas_mensais':
+              case 'vendas_diarias':
+                  const periodo = dadosSelecionados.split('_')[1].slice(0, -1); // diario, semanal, mensal
+                  const vendasAgrupadas = agruparVendas(periodo);
+                  labels = Object.keys(vendasAgrupadas).sort();
+                  data = labels.map(l => vendasAgrupadas[l].valor);
+                  chartLabel = `Vendas ${periodo.charAt(0).toUpperCase() + periodo.slice(1)}s (R$)`;
+                  break;
+              case 'produtos_vendidos_qtd':
+              case 'produtos_vendidos_valor':
+                  const tipoValor = dadosSelecionados.includes('valor');
+                  const vendasPorProduto = appData.vendas.reduce((acc, v) => {
+                      const prodNome = appData.produtos.find(p => p.id === v.produtoId)?.nome || 'Desconhecido';
+                      acc[prodNome] = (acc[prodNome] || 0) + (tipoValor ? v.valor : v.qtd);
+                      return acc;
+                  }, {});
+                  // Ordena por valor/quantidade descendente
+                  const sortedProdutos = Object.entries(vendasPorProduto).sort(([,a],[,b]) => b-a);
+                  labels = sortedProdutos.map(([nome]) => nome);
+                  data = sortedProdutos.map(([,valor]) => valor);
+                  chartLabel = `Produtos Mais Vendidos (${tipoValor ? 'Valor R$' : 'Qtd'})`;
+                  break;
+              case 'nivel_estoque':
+                  const estoqueNumerico = appData.estoque.filter(item => !isNaN(parseFloat(item.quantidade)));
+                  labels = estoqueNumerico.map(item => `${item.nome} (${item.unidade})`);
+                  data = estoqueNumerico.map(item => parseFloat(item.quantidade));
+                  chartLabel = 'Nível de Estoque';
+                  break;
+              default: return;
+          }
+
+          if (graficoAvancadoInstance) graficoAvancadoInstance.destroy();
+
+          graficoAvancadoInstance = new Chart(graficoAvancadoCanvas, {
+              type: tipoGrafico,
+              data: {
+                  labels: labels,
+                  datasets: [{
+                      label: chartLabel,
+                      data: data,
+                      backgroundColor: backgroundColors,
+                      borderColor: borderColors,
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  plugins: { legend: { position: 'top' } },
+                  scales: (tipoGrafico === 'bar' || tipoGrafico === 'line') ? { y: { beginAtZero: true } } : {}
+              }
+          });
+      }
+
+      function atualizarAnalisesSugestoes() {
+          let html = '';
+          // 1. Produtos mais vendidos (Top 3)
+          const vendasPorProdutoValor = appData.vendas.reduce((acc, v) => {
+              const prodNome = appData.produtos.find(p => p.id === v.produtoId)?.nome || 'Desconhecido';
+              acc[prodNome] = (acc[prodNome] || 0) + v.valor;
+              return acc;
+          }, {});
+          const topProdutos = Object.entries(vendasPorProdutoValor)
+                                .sort(([,a],[,b]) => b-a)
+                                .slice(0, 3);
+
+          if (topProdutos.length > 0) {
+              html += '<p><strong>Top Produtos (Faturamento):</strong> '; 
+              html += topProdutos.map(([nome, valor]) => `${nome} (R$ ${valor.toFixed(2)})`).join(', ') + '.</p>';
+          } else {
+              html += '<p>Nenhuma venda registrada para análise de produtos.</p>';
+          }
+
+          // 2. Sugestão de Estoque (Itens com alerta)
+          const itensBaixoEstoque = appData.estoque.filter(item => {
+              const qtd = parseFloat(item.quantidade);
+              const min = parseFloat(item.estoqueMinimo);
+              return !isNaN(qtd) && !isNaN(min) && min > 0 && qtd <= min;
+          });
+          if (itensBaixoEstoque.length > 0) {
+              html += `<p class="text-orange-600"><strong>Sugestão:</strong> Repor estoque de: ${itensBaixoEstoque.map(item => item.nome).join(', ')}.</p>`;
+          }
+
+          // 3. Análise Simples de Tendência Semanal
+          const vendasSemanais = agruparVendas('semanal');
+          const semanas = Object.keys(vendasSemanais).sort();
+          if (semanas.length >= 2) {
+              const ultimaSemanaValor = vendasSemanais[semanas[semanas.length - 1]].valor;
+              const penultimaSemanaValor = vendasSemanais[semanas[semanas.length - 2]].valor;
+              const diff = ultimaSemanaValor - penultimaSemanaValor;
+              const perc = penultimaSemanaValor > 0 ? (diff / penultimaSemanaValor) * 100 : (ultimaSemanaValor > 0 ? 100 : 0);
+              html += `<p><strong>Tendência Semanal:</strong> Vendas da última semana (${semanas[semanas.length - 1]}) ${diff >= 0 ? 'aumentaram' : 'diminuíram'} R$ ${Math.abs(diff).toFixed(2)} (${perc.toFixed(1)}%) em relação à semana anterior.</p>`;
+          } else if (semanas.length === 1) {
+               html += `<p><strong>Tendência Semanal:</strong> Primeira semana com vendas registradas (R$ ${vendasSemanais[semanas[0]].valor.toFixed(2)}).</p>`;
+          }
+
+          analisesSugestoesDiv.innerHTML = html || '<p>Sem dados suficientes para análises e sugestões.</p>';
+      }
+
+      // --- Initializations --- 
+      function atualizarTodasTabelasEGraficos() {
+          atualizarTabelaVendas();
+          atualizarTabelaProdutos();
+          atualizarTabelaEstoque();
+          atualizarMeta();
+          atualizarDashboard();
+          carregarLogoSalvo();
+          atualizarGraficoAvancado();
+          atualizarAnalisesSugestoes();
+          
+          // Inicializar os novos filtros
+          inicializarFiltros();
+      }
+      
+      // --- Novas funções para os filtros e gráficos ---
+      
+      // Função para inicializar os filtros
+      function inicializarFiltros() {
+          // Preencher o filtro de produtos para vendas
+          const filtroProdutoVenda = document.getElementById('filtroProdutoVenda');
+          if (filtroProdutoVenda) {
+              filtroProdutoVenda.innerHTML = '<option value="todos">Todos os produtos</option>';
+              appData.produtos.forEach(p => {
+                  const option = document.createElement('option');
+                  option.value = p.id;
+                  option.textContent = p.nome;
+                  filtroProdutoVenda.appendChild(option);
+              });
+          }
+          
+          // Preencher o filtro de sabores para produtos
+          const filtroSaboresProduto = document.getElementById('filtroSaboresProduto');
+          if (filtroSaboresProduto) {
+              const saboresSet = new Set();
+              appData.produtos.forEach(p => {
+                  if (p.sabores) {
+                      p.sabores.split(',').forEach(sabor => {
+                          saboresSet.add(sabor.trim());
+                      });
+                  }
+              });
+              
+              filtroSaboresProduto.innerHTML = '<option value="todos">Todos os sabores</option>';
+              [...saboresSet].sort().forEach(sabor => {
+                  if (sabor) {
+                      const option = document.createElement('option');
+                      option.value = sabor;
+                      option.textContent = sabor;
+                      filtroSaboresProduto.appendChild(option);
+                  }
+              });
+          }
+          
+          // Preencher o select de produtos para comparação em gráficos
+          const produtosComparar = document.getElementById('produtosComparar');
+          if (produtosComparar) {
+              produtosComparar.innerHTML = '';
+              appData.produtos.forEach(p => {
+                  const option = document.createElement('option');
+                  option.value = p.id;
+                  option.textContent = p.nome;
+                  produtosComparar.appendChild(option);
+              });
+          }
+          
+          // Adicionar event listeners para os filtros
+          adicionarEventListenersFiltros();
+      }
+      
+      // Função para adicionar event listeners aos filtros
+      function adicionarEventListenersFiltros() {
+          // Filtro de período personalizado para vendas
+          const filtroVendasPeriodo = document.getElementById('filtroVendasPeriodo');
+          const periodoPersonalizadoContainer = document.getElementById('periodoPersonalizadoContainer');
+          
+          if (filtroVendasPeriodo && periodoPersonalizadoContainer) {
+              filtroVendasPeriodo.addEventListener('change', function() {
+                  if (this.value === 'personalizado') {
+                      periodoPersonalizadoContainer.classList.remove('hidden');
+                  } else {
+                      periodoPersonalizadoContainer.classList.add('hidden');
+                  }
+              });
+          }
+          
+          // Botões para aplicar e limpar filtros de vendas
+          const aplicarFiltrosVendas = document.getElementById('aplicarFiltrosVendas');
+          const limparFiltrosVendas = document.getElementById('limparFiltrosVendas');
+          
+          if (aplicarFiltrosVendas) {
+              aplicarFiltrosVendas.addEventListener('click', function() {
+                  filtrarVendas();
+              });
+          }
+          
+          if (limparFiltrosVendas) {
+              limparFiltrosVendas.addEventListener('click', function() {
+                  document.getElementById('filtroVendasPeriodo').value = 'todos';
+                  document.getElementById('filtroProdutoVenda').value = 'todos';
+                  document.getElementById('buscarVenda').value = '';
+                  periodoPersonalizadoContainer.classList.add('hidden');
+                  document.getElementById('dataInicio').value = '';
+                  document.getElementById('dataFim').value = '';
+                  atualizarTabelaVendas(); // Mostrar todas as vendas
+              });
+          }
+          
+          // Botões para aplicar e limpar filtros de produtos
+          const aplicarFiltrosProdutos = document.getElementById('aplicarFiltrosProdutos');
+          const limparFiltrosProdutos = document.getElementById('limparFiltrosProdutos');
+          
+          if (aplicarFiltrosProdutos) {
+              aplicarFiltrosProdutos.addEventListener('click', function() {
+                  filtrarProdutos();
+              });
+          }
+          
+          if (limparFiltrosProdutos) {
+              limparFiltrosProdutos.addEventListener('click', function() {
+                  document.getElementById('filtroCategoriasProduto').value = 'todas';
+                  document.getElementById('filtroSaboresProduto').value = 'todos';
+                  document.getElementById('buscarProduto').value = '';
+                  atualizarTabelaProdutos(); // Mostrar todos os produtos
+              });
+          }
+          
+          // Botões para aplicar e limpar filtros de estoque
+          const aplicarFiltrosEstoque = document.getElementById('aplicarFiltrosEstoque');
+          const limparFiltrosEstoque = document.getElementById('limparFiltrosEstoque');
+          
+          if (aplicarFiltrosEstoque) {
+              aplicarFiltrosEstoque.addEventListener('click', function() {
+                  filtrarEstoque();
+              });
+          }
+          
+          if (limparFiltrosEstoque) {
+              limparFiltrosEstoque.addEventListener('click', function() {
+                  document.getElementById('filtroTipoEstoque').value = 'todos';
+                  document.getElementById('filtroEstoqueBaixo').value = 'todos';
+                  document.getElementById('buscarEstoque').value = '';
+                  atualizarTabelaEstoque(); // Mostrar todo o estoque
+              });
+          }
+          
+          // Opções de gráfico no dashboard
+          const tipoGraficoDashboard = document.getElementById('tipoGraficoDashboard');
+          const periodoGraficoDashboard = document.getElementById('periodoGraficoDashboard');
+          
+          if (tipoGraficoDashboard) {
+              tipoGraficoDashboard.addEventListener('change', function() {
+                  atualizarDashboard();
+              });
+          }
+          
+          if (periodoGraficoDashboard) {
+              periodoGraficoDashboard.addEventListener('change', function() {
+                  atualizarDashboard();
+              });
+          }
+          
+          // Botão para exportar gráfico
+          const exportarGraficoBtn = document.getElementById('exportarGrafico');
+          if (exportarGraficoBtn) {
+              exportarGraficoBtn.addEventListener('click', function() {
+                  exportarGrafico();
+              });
+          }
+      }
+      
+      // Função para filtrar vendas
+      function filtrarVendas() {
+          const periodo = document.getElementById('filtroVendasPeriodo').value;
+          const produtoId = document.getElementById('filtroProdutoVenda').value;
+          const busca = document.getElementById('buscarVenda').value.toLowerCase();
+          
+          let vendasFiltradas = [...appData.vendas];
+          
+          // Filtrar por período
+          if (periodo !== 'todos') {
+              const hoje = new Date();
+              const dataHoje = hoje.toISOString().slice(0, 10);
+              
+              if (periodo === 'hoje') {
+                  vendasFiltradas = vendasFiltradas.filter(v => v.data === dataHoje);
+              } else if (periodo === 'semana') {
+                  const inicioSemana = new Date(hoje);
+                  inicioSemana.setDate(hoje.getDate() - hoje.getDay()); // Domingo
+                  const inicioSemanaStr = inicioSemana.toISOString().slice(0, 10);
+                  
+                  vendasFiltradas = vendasFiltradas.filter(v => v.data >= inicioSemanaStr);
+              } else if (periodo === 'mes') {
+                  const inicioMes = dataHoje.slice(0, 8) + '01';
+                  vendasFiltradas = vendasFiltradas.filter(v => v.data >= inicioMes);
+              } else if (periodo === 'personalizado') {
+                  const dataInicio = document.getElementById('dataInicio').value;
+                  const dataFim = document.getElementById('dataFim').value;
+                  
+                  if (dataInicio) {
+                      vendasFiltradas = vendasFiltradas.filter(v => v.data >= dataInicio);
+                  }
+                  
+                  if (dataFim) {
+                      vendasFiltradas = vendasFiltradas.filter(v => v.data <= dataFim);
+                  }
+              }
+          }
+          
+          // Filtrar por produto
+          if (produtoId !== 'todos') {
+              vendasFiltradas = vendasFiltradas.filter(v => v.produtoId === produtoId);
+          }
+          
+          // Filtrar por busca
+          if (busca) {
+              vendasFiltradas = vendasFiltradas.filter(v => {
+                  const produto = appData.produtos.find(p => p.id === v.produtoId);
+                  return produto && produto.nome.toLowerCase().includes(busca);
+              });
+          }
+          
+          // Atualizar a tabela com as vendas filtradas
+          atualizarTabelaVendasFiltradas(vendasFiltradas);
+      }
+      
+      // Função para atualizar a tabela de vendas com vendas filtradas
+      function atualizarTabelaVendasFiltradas(vendasFiltradas) {
+          vendasTabelaBody.innerHTML = '';
+          [...vendasFiltradas].reverse().forEach((v) => { // Mostra mais recentes primeiro
+              const produtoInfo = appData.produtos.find(p => p.id === v.produtoId) || { nome: 'Produto Removido' };
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td class="p-2 border-t">${v.data}</td>
+                <td class="p-2 border-t">${produtoInfo.nome}</td>
+                <td class="p-2 border-t">${v.qtd}</td>
+                <td class="p-2 border-t">R$ ${v.valor.toFixed(2)}</td>
+                <td class="p-2 border-t">
+                    <button class="action-button delete-button" onclick="removerVenda('${v.id}')">Remover</button>
+                </td>
+              `;
+              vendasTabelaBody.appendChild(tr);
+          });
+      }
+      
+      // Função para filtrar produtos
+      function filtrarProdutos() {
+          const categoria = document.getElementById('filtroCategoriasProduto').value;
+          const sabor = document.getElementById('filtroSaboresProduto').value;
+          const busca = document.getElementById('buscarProduto').value.toLowerCase();
+          
+          let produtosFiltrados = [...appData.produtos];
+          
+          // Filtrar por categoria
+          if (categoria !== 'todas') {
+              produtosFiltrados = produtosFiltrados.filter(p => p.categoria === categoria);
+          }
+          
+          // Filtrar por sabor
+          if (sabor !== 'todos') {
+              produtosFiltrados = produtosFiltrados.filter(p => 
+                  p.sabores && p.sabores.toLowerCase().includes(sabor.toLowerCase())
+              );
+          }
+          
+          // Filtrar por busca
+          if (busca) {
+              produtosFiltrados = produtosFiltrados.filter(p => 
+                  p.nome.toLowerCase().includes(busca) || 
+                  (p.detalhes && p.detalhes.toLowerCase().includes(busca)) ||
+                  (p.sabores && p.sabores.toLowerCase().includes(busca))
+              );
+          }
+          
+          // Atualizar a tabela com os produtos filtrados
+          atualizarTabelaProdutosFiltrados(produtosFiltrados);
+      }
+      
+      // Função para atualizar a tabela de produtos com produtos filtrados
+      function atualizarTabelaProdutosFiltrados(produtosFiltrados) {
+          produtosTabelaBody.innerHTML = '';
+          produtosFiltrados.forEach(p => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                  <td class="p-2 border-t">${p.nome}</td>
+                  <td class="p-2 border-t">${p.categoria || '-'}</td>
+                  <td class="p-2 border-t">${p.sabores || '-'}</td>
+                  <td class="p-2 border-t">R$ ${p.preco.toFixed(2)} ${p.promocao ? `<span class="text-xs text-green-600">(${p.promocao})</span>` : ''}</td>
+                  <td class="p-2 border-t">${p.custo ? `R$ ${p.custo.toFixed(2)}` : '-'}</td>
+                  <td class="p-2 border-t">
+                      <button class="action-button edit-button" onclick="prepararEdicaoProduto('${p.id}')">Editar</button>
+                      <button class="action-button delete-button" onclick="removerProduto('${p.id}')">Remover</button>
+                  </td>
+              `;
+              produtosTabelaBody.appendChild(tr);
+          });
+      }
+      
+      // Função para filtrar estoque
+      function filtrarEstoque() {
+          const tipo = document.getElementById('filtroTipoEstoque').value;
+          const nivel = document.getElementById('filtroEstoqueBaixo').value;
+          const busca = document.getElementById('buscarEstoque').value.toLowerCase();
+          
+          let estoqueFiltrado = [...appData.estoque];
+          
+          // Filtrar por tipo
+          if (tipo !== 'todos') {
+              estoqueFiltrado = estoqueFiltrado.filter(item => item.tipo === tipo);
+          }
+          
+          // Filtrar por nível
+          if (nivel !== 'todos') {
+              estoqueFiltrado = estoqueFiltrado.filter(item => {
+                  const quantidadeNum = parseFloat(item.quantidade);
+                  const estoqueMinimoNum = parseFloat(item.estoqueMinimo);
+                  
+                  if (nivel === 'baixo') {
+                      return !isNaN(quantidadeNum) && !isNaN(estoqueMinimoNum) && estoqueMinimoNum > 0 && quantidadeNum <= estoqueMinimoNum;
+                  } else if (nivel === 'normal') {
+                      return isNaN(estoqueMinimoNum) || isNaN(quantidadeNum) || estoqueMinimoNum <= 0 || quantidadeNum > estoqueMinimoNum;
+                  }
+                  
+                  return true;
+              });
+          }
+          
+          // Filtrar por busca
+          if (busca) {
+              estoqueFiltrado = estoqueFiltrado.filter(item => 
+                  item.nome.toLowerCase().includes(busca) || 
+                  item.tipo.toLowerCase().includes(busca)
+              );
+          }
+          
+          // Atualizar a tabela com o estoque filtrado
+          atualizarTabelaEstoqueFiltrado(estoqueFiltrado);
+      }
+      
+      // Função para atualizar a tabela de estoque com estoque filtrado
+      function atualizarTabelaEstoqueFiltrado(estoqueFiltrado) {
+          estoqueTabelaBody.innerHTML = '';
+          estoqueFiltrado.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(item => {
+              const tr = document.createElement('tr');
+              let quantidadeClasse = '';
+              const quantidadeNum = parseFloat(item.quantidade);
+              const estoqueMinimoNum = parseFloat(item.estoqueMinimo);
+              
+              if (!isNaN(quantidadeNum) && !isNaN(estoqueMinimoNum) && estoqueMinimoNum > 0 && quantidadeNum <= estoqueMinimoNum) {
+                  quantidadeClasse = 'text-red-600 font-bold';
+              }
+              
+              tr.innerHTML = `
+                <td class="p-2 border-t">${item.nome}</td>
+                <td class="p-2 border-t ${quantidadeClasse}">${item.quantidade} ${item.unidade}</td>
+                <td class="p-2 border-t">${item.tipo}</td>
+                <td class="p-2 border-t">
+                    <button class="action-button edit-button" onclick="prepararEdicaoEstoque('${item.id}')">Editar</button>
+                    <button class="action-button delete-button" onclick="removerItemEstoque('${item.id}')">Remover</button>
+                </td>
+              `;
+              estoqueTabelaBody.appendChild(tr);
+          });
+      }
+      
+      // Função para atualizar o dashboard com as opções selecionadas
+      function atualizarDashboard() {
+          if (!vendasChartCanvas) return;
+          
+          const tipoGrafico = document.getElementById('tipoGraficoDashboard')?.value || 'bar';
+          const periodo = document.getElementById('periodoGraficoDashboard')?.value || 'semanal';
+          
+          const dadosAgrupados = agruparVendas(periodo);
+          const labels = Object.keys(dadosAgrupados).sort();
+          const valores = labels.map(l => dadosAgrupados[l].valor);
+          
+          const lucroTotal = appData.vendas.reduce((acc, v) => acc + v.valor, 0);
+          lucroTotalSpan.textContent = lucroTotal.toFixed(2);
+          
+          if (vendasChartInstance) {
+              vendasChartInstance.destroy();
+          }
+          
+          vendasChartInstance = new Chart(vendasChartCanvas, {
+              type: tipoGrafico,
+              data: {
+                  labels,
+                  datasets: [{
+                      label: `Vendas ${periodo.charAt(0).toUpperCase() + periodo.slice(1)}s (R$)`,
+                      data: valores,
+                      backgroundColor: 'var(--cor-destaque-rosa)',
+                      borderColor: 'var(--cor-secundaria-rosa)',
+                      borderWidth: 1,
+                  }]
+              },
+              options: { 
+                  responsive: true, 
+                  scales: (tipoGrafico === 'bar' || tipoGrafico === 'line') ? { y: { beginAtZero: true } } : {}
+              }
+          });
+      }
+      
+      // Função para exportar gráfico
+      function exportarGrafico() {
+          const canvas = document.getElementById('graficoAvancadoCanvas');
+          if (!canvas) return;
+          
+          // Converter o canvas para uma URL de dados
+          const dataURL = canvas.toDataURL('image/png');
+          
+          // Criar um link para download
+          const link = document.createElement('a');
+          link.href = dataURL;
+          link.download = `grafico_${new Date().toISOString().slice(0, 10)}.png`;
+          link.click();
+      }
+      
+      // Sobrescrever a função prepararEdicaoProduto para lidar com os novos campos
+      function prepararEdicaoProduto(id) {
+          const produto = appData.produtos.find(p => p.id === id);
+          if (produto) {
+              document.getElementById('produtoId').value = produto.id;
+              document.getElementById('produtoNome').value = produto.nome;
+              
+              // Novos campos
+              if (document.getElementById('produtoCategoria')) {
+                  document.getElementById('produtoCategoria').value = produto.categoria || "";
+              }
+              
+              if (document.getElementById('produtoSabores')) {
+                  document.getElementById('produtoSabores').value = produto.sabores || "";
+              }
+              
+              document.getElementById('produtoDetalhes').value = produto.detalhes || '';
+              document.getElementById('produtoPreco').value = produto.preco.toFixed(2);
+              document.getElementById('produtoPromocao').value = produto.promocao || '';
+              document.getElementById('produtoCusto').value = produto.custo ? produto.custo.toFixed(2) : '';
+              document.getElementById('produtoSubmitButton').textContent = 'Salvar Alterações';
+              document.getElementById('produtoCancelButton').classList.remove('hidden');
+              produtoForm.scrollIntoView({ behavior: 'smooth' });
+          }
+      }
+
+      carregarDados();
+      showSection('inicio_dashboard');
+      atualizarTodasTabelasEGraficos();
+
+    </script>
+  </body>
+</html>
